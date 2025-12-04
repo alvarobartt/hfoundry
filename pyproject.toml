@@ -1,0 +1,18 @@
+[project]
+name = "hfoundry"
+version = "0.1.0"
+description = "From the Hugging Face Hub to Microsoft Foundry"
+readme = "README.md"
+authors = [
+    { name = "Alvaro Bartolome", email = "36760800+alvarobartt@users.noreply.github.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "azure-ai-ml>=1.30.0",
+    "azure-identity>=1.25.1",
+    "huggingface-hub[hf-xet]>=1.1.7",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.5,<0.10.0"]
+build-backend = "uv_build"
