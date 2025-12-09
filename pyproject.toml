@@ -28,3 +28,9 @@ select = ["I"]
 
 [tool.ruff.lint.isort]
 force-single-line = false
+
+[dependency-groups]
+lint = [
+    "pre-commit>=4.5.0",
+    "ruff>=0.14.8",
+]
