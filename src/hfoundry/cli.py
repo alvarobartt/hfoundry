@@ -39,7 +39,9 @@ def main() -> None:
     for env in {"SUBSCRIPTION_ID", "RESOURCE_GROUP", "FOUNDRY_PROJECT"}:
         if not os.getenv(env):
             raise ValueError(
-                f"The environment variable `{env}` not set. To run `hfoundry deploy` you need to set the following environment variables: `SUBSCRIPTION_ID`, `RESOURCE_GROUP`, and `FOUNDRY_PROJECT` (Microsoft Foundry Hub-based project)"
+                f"The environment variable `{env}` not set. To run `hfoundry deploy` you need to set the "
+                "following environment variables: `SUBSCRIPTION_ID`, `RESOURCE_GROUP`, and `FOUNDRY_PROJECT` "
+                "(Microsoft Foundry Hub-based project)"
             )
 
     subscription_id = os.getenv("SUBSCRIPTION_ID")
@@ -82,8 +84,8 @@ def main() -> None:
 
     endpoint_name = f"endpoint-{str(uuid4())[:8]}"
 
-    # TODO: If the model is gated i.e., `info.gated=True`, validate that the Hugging Face Hub connection is set, and that the
-    # token has access to that model in particular via the `huggingface_hub`
+    # TODO: If the model is gated i.e., `info.gated=True`, validate that the Hugging Face Hub connection is
+    # set, and that the token has access to that model via the `huggingface_hub`
     logging.info(f"ENDPOINT={endpoint_name} BEGIN")
     endpoint = ManagedOnlineEndpoint(
         name=endpoint_name,
