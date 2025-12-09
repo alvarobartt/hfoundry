@@ -74,7 +74,16 @@ def main() -> None:
 
     try:
         # NOTE: Validate that the provided `--model-id` exists on Microsoft Foundry
-        _ = client.models.get(model_name, label="latest")
+        # NOTE: We need to instantiate a new `MLClient` given that the same client cannot be
+        # used to deploy models and to query the "HuggingFace" registry
+        client_r = MLClient(
+            credential=DefaultAzureCredential(),
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            registry_name="HuggingFace",
+        )
+
+        _ = client_r.models.get(model_name, label="latest")
     except Exception as e:
         raise e
 
