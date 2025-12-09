@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Alvaro Bartolome", email = "36760800+alvarobartt@users.noreply.github.com" }
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.13"
 dependencies = [
     "azure-ai-ml>=1.30.0",
     "azure-identity>=1.25.1",
