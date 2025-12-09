@@ -46,7 +46,7 @@ def main() -> None:
 
     subscription_id = os.getenv("SUBSCRIPTION_ID")
     resource_group_name = os.getenv("RESOURCE_GROUP")
-    workspace_name = os.getenv("AI_FOUNDRY_HUB_PROJECT")
+    workspace_name = os.getenv("FOUNDRY_PROJECT")
 
     logging.info("MLClient INIT")
     logging.info(f"    SUBSCRIPTION_ID={subscription_id}")
