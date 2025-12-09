@@ -31,6 +31,14 @@ parser.add_argument(
 )
 
 
+logger = logging.getLogger("hfoundry")
+logger.setLevel(logging.INFO)
+
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter("%(message)s"))
+logger.addHandler(handler)
+
+
 def main() -> None:
     args = parser.parse_args()
     if args.instance_count < 1:
@@ -48,17 +56,17 @@ def main() -> None:
     resource_group_name = os.getenv("RESOURCE_GROUP")
     workspace_name = os.getenv("FOUNDRY_PROJECT")
 
-    logging.info("MLClient INIT")
-    logging.info(f"    SUBSCRIPTION_ID={subscription_id}")
-    logging.info(f"    RESOURCE_GROUP_NAME={resource_group_name}")
-    logging.info(f"    WORKSPACE_NAME={workspace_name}")
+    logger.info("MLClient INIT")
+    logger.info(f"    SUBSCRIPTION_ID={subscription_id}")
+    logger.info(f"    RESOURCE_GROUP_NAME={resource_group_name}")
+    logger.info(f"    WORKSPACE_NAME={workspace_name}")
     client = MLClient(
         credential=DefaultAzureCredential(),
-        subscription_id=os.getenv("SUBSCRIPTION_ID"),
-        resource_group_name=os.getenv("RESOURCE_GROUP"),
-        workspace_name=os.getenv("AI_FOUNDRY_HUB_PROJECT"),
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        workspace_name=workspace_name,
     )
-    logging.info("MLClient SUCCESS")
+    logger.info("MLClient SUCCESS")
 
     model_id = args.model_id
 
@@ -66,7 +74,7 @@ def main() -> None:
         # NOTE: Validate that the provided `--model-id` exists on Hugging Face
         info = model_info(model_id)
     except RepositoryNotFoundError as e:
-        logging.error(f"MODEL={model_id} NOT FOUND ON HUGGING FACE")
+        logger.error(f"MODEL={model_id} NOT FOUND ON HUGGING FACE")
         raise e
 
     model_name = model_id.replace("/", "-").replace("_", "-").lower()
@@ -95,23 +103,23 @@ def main() -> None:
 
     # TODO: If the model is gated i.e., `info.gated=True`, validate that the Hugging Face Hub connection is
     # set, and that the token has access to that model via the `huggingface_hub`
-    logging.info(f"ENDPOINT={endpoint_name} BEGIN")
+    logger.info(f"ENDPOINT={endpoint_name} BEGIN")
     endpoint = ManagedOnlineEndpoint(
         name=endpoint_name,
         properties={"enforce_access_to_default_secret_stores": "enabled"}
         if info.gated
         else {},
     )
-    logging.info(f"ENDPOINT={endpoint_name} CREATE / UPDATE")
+    logger.info(f"ENDPOINT={endpoint_name} CREATE / UPDATE")
     client.begin_create_or_update(endpoint).wait()
-    logging.info(f"ENDPOINT={endpoint_name} SUCCESS")
+    logger.info(f"ENDPOINT={endpoint_name} SUCCESS")
 
     deployment_name = f"deployment-{str(uuid4())[:8]}"
 
-    logging.info(f"DEPLOYMENT={deployment_name} BEGIN")
-    logging.info(f"    ENDPOINT={endpoint_name}")
-    logging.info(f"    MODEL={model_uri}")
-    logging.info(f"    INSTANCE={instance_type} x {instance_count}")
+    logger.info(f"DEPLOYMENT={deployment_name} BEGIN")
+    logger.info(f"    ENDPOINT={endpoint_name}")
+    logger.info(f"    MODEL={model_uri}")
+    logger.info(f"    INSTANCE={instance_type} x {instance_count}")
     deployment = ManagedOnlineDeployment(
         name=deployment_name,
         endpoint_name=endpoint_name,
@@ -119,17 +127,17 @@ def main() -> None:
         instance_type=instance_type,
         instance_count=instance_count,
     )
-    logging.info(f"DEPLOYMENT={deployment_name} CREATE / UPDATE")
+    logger.info(f"DEPLOYMENT={deployment_name} CREATE / UPDATE")
     client.online_deployments.begin_create_or_update(deployment).wait()
-    logging.info(f"DEPLOYMENT={deployment_name} SUCCESS")
+    logger.info(f"DEPLOYMENT={deployment_name} SUCCESS")
 
-    logging.info(f"ENDPOINT={endpoint_name} INFORMATION")
+    logger.info(f"ENDPOINT={endpoint_name} INFORMATION")
     online_endpoint = client.online_endpoints.get(endpoint_name)
-    logging.info(f"    SCORING URI={online_endpoint.scoring_uri}")
+    logger.info(f"    SCORING URI={online_endpoint.scoring_uri}")
     # NOTE: Setting the `azureml-model-deployment` header is mandatory, given that the same endpoint
     # can have multiple deployments, hence the need to point to a specific deployment
-    logging.info(f'    HEADER={{"azureml-model-deployment": {deployment_name}}}')
+    logger.info(f'    HEADER={{"azureml-model-deployment": {deployment_name}}}')
     online_endpoint_keys = client.online_endpoints.get_keys(endpoint_name)
     if online_endpoint.auth_mode == "KEY":
-        logging.info(f"    PRIMARY KEY={online_endpoint_keys.primary_key}")  # type: ignore
-        logging.info(f"    SECONDARY KEY={online_endpoint_keys.secondary_key}")  # type: ignore
+        logger.info(f"    PRIMARY KEY={online_endpoint_keys.primary_key}")  # type: ignore
+        logger.info(f"    SECONDARY KEY={online_endpoint_keys.secondary_key}")  # type: ignore
