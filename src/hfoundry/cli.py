@@ -136,7 +136,7 @@ def main() -> None:
     logger.info(f"    SCORING URI={online_endpoint.scoring_uri}")
     # NOTE: Setting the `azureml-model-deployment` header is mandatory, given that the same endpoint
     # can have multiple deployments, hence the need to point to a specific deployment
-    logger.info(f'    HEADER={{"azureml-model-deployment": {deployment_name}}}')
+    logger.info(f'    HEADER={{"azureml-model-deployment": "{deployment_name}"}}')
     if online_endpoint.auth_mode == "key":
         online_endpoint_keys = client.online_endpoints.get_keys(endpoint_name)
         logger.info(f"    PRIMARY KEY={online_endpoint_keys.primary_key}")  # type: ignore
