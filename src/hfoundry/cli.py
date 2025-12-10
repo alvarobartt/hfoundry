@@ -129,7 +129,7 @@ def main() -> None:
     )
     logger.info(f"DEPLOYMENT={deployment_name} CREATE / UPDATE")
     client.online_deployments.begin_create_or_update(deployment).wait()
-    logger.info(f"DEPLOYMENT={deployment_name} SUCCESS")
+    logger.info(f"\nDEPLOYMENT={deployment_name} SUCCESS")
 
     logger.info(f"ENDPOINT={endpoint_name} INFORMATION")
     online_endpoint = client.online_endpoints.get(endpoint_name)
